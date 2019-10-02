@@ -14,7 +14,8 @@ public class Calculator {
         String preparedInputExpression = prepareInputExpression(inputExpression);
         String validatedInputExpression = validateInputExpression(preparedInputExpression);
 
-        List<String> reversePolishNotation = reversePolishNotation(validatedInputExpression);
+        PolishNotation polishNotation = new PolishNotation(validatedInputExpression, CalculatorRegEx.OPERANDS_REG_EX);
+        List<String> reversePolishNotation = polishNotation.getReversePolishNotation();
         Deque<String> numbersStack = new ArrayDeque<>();
 
         for (String operand : reversePolishNotation) {
@@ -56,86 +57,12 @@ public class Calculator {
         return inputExpression;
     }
 
-    private List<String> reversePolishNotation(String inputData) {
-        List<String> output = new ArrayList<>();
-        Deque<String> operatorsStack = new ArrayDeque<>();
-
-        Pattern pattern = Pattern.compile(CalculatorRegEx.OPERANDS_REG_EX);
-        Matcher matcher = pattern.matcher(inputData);
-
-        while (matcher.find()) {
-            String currentOperand = matcher.group();
-
-            if (isOperator(currentOperand)) {
-                String lastOperator = operatorsStack.peek();
-
-                if (lastOperator != null && lastOperator.equals("(")) {
-                    operatorsStack.push(currentOperand);
-                    continue;
-                }
-
-                while (lastOperator != null && priority(currentOperand) <= priority(lastOperator)) {
-                    if (!currentOperand.equals(lastOperator)) {
-                        output.add(operatorsStack.pop());
-                        lastOperator = operatorsStack.peek();
-                    } else {
-                        lastOperator = null;
-                    }
-                }
-                operatorsStack.push(currentOperand);
-            } else if (currentOperand.equals("(")) {
-                operatorsStack.push(currentOperand);
-            } else if (currentOperand.equals(")")) {
-                String lastOperator = operatorsStack.poll();
-                while (lastOperator != null && !lastOperator.equals("(")) {
-                    output.add(lastOperator);
-                    lastOperator = operatorsStack.poll();
-                }
-            } else {
-                output.add(currentOperand);
-            }
-        }
-
-        String leftOperators = operatorsStack.poll();
-        while (leftOperators != null) {
-            output.add(leftOperators);
-            leftOperators = operatorsStack.poll();
-        }
-
-        return output;
-    }
-
     private Double convertStringToDouble(String doubleAsString) {
         return Stream.of(doubleAsString)
                 .filter(Objects::nonNull)
                 .mapToDouble(Double::valueOf)
                 .findFirst()
                 .orElse(0);
-    }
-
-    private boolean isOperator(String operand) {
-        switch (operand) {
-            case "*":
-            case ":":
-            case "+":
-            case "-":
-            case "^":
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private int priority(String operator) {
-        switch (operator) {
-            case "^":
-                return 3;
-            case "*":
-            case ":":
-                return 2;
-            default:
-                return 1;
-        }
     }
 
     private String doOperationOnDoubles(Double firstDouble, Double secondDouble, String operator)
