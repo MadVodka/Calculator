@@ -5,7 +5,10 @@ import java.util.regex.Pattern;
 
 public class CalculatorRegEx {
     String expression = "3.412+0.31*2:(1-5)^2^3";
-    String elementRegEx = "((\\d+([\\.]\\d+)?)|[\\+\\-\\*:^()])";
+    public static final String CALCULATOR_OPERANDS_REG_EX = "((\\d+([\\.]\\d+)?)|[\\+\\-\\*:^()])";
+    public static final String CALCULATOR_NUMBERS = "(\\d+([\\.]\\d+)?)";
+    public static final String CALCULATOR_OPERATORS = "[\\+\\-\\*:^]";
+    public static final String CALCULATOR_BRACES = "[()]";
 
     // https://regex101.com/r/h1t2aO/2
 
@@ -25,7 +28,7 @@ public class CalculatorRegEx {
     }
 
     private void test() {
-        Pattern pattern = Pattern.compile(elementRegEx);
+        Pattern pattern = Pattern.compile(CALCULATOR_OPERANDS_REG_EX);
         Matcher matcher = pattern.matcher(expression);
         while (matcher.find()) {
             System.out.println(matcher.group());
