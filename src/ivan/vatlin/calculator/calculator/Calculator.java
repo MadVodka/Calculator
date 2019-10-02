@@ -1,13 +1,16 @@
-package ivan.vatlin.calculator;
+package ivan.vatlin.calculator.calculator;
+
+import ivan.vatlin.calculator.exceptions.CalculatorValidationException;
+import ivan.vatlin.calculator.exceptions.DevideByZeroException;
+import ivan.vatlin.calculator.exceptions.WrongOperandsException;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class CalculatorImpl implements Calculator {
-    @Override
-    public String calculate(String inputExpression) throws Exception {
+public class Calculator {
+    public String calculate(String inputExpression) throws WrongOperandsException, CalculatorValidationException {
         String preparedInputExpression = prepareInputExpression(inputExpression);
         String validatedInputExpression = validateInputExpression(preparedInputExpression);
 
@@ -21,12 +24,12 @@ public class CalculatorImpl implements Calculator {
                 Double secondDouble = convertStringToDouble(numbersStack.poll());
                 Double firstDouble = convertStringToDouble(numbersStack.poll());
 
-                String result = calculateExpression(firstDouble, secondDouble, operand);
+                String result = doOperationOnDoubles(firstDouble, secondDouble, operand);
                 numbersStack.push(result);
             } else if (Pattern.matches(CalculatorRegEx.BRACES_REG_EX, operand)) {
-                throw new Exception("Используются лишние скобки");
+                throw new WrongOperandsException("Используются лишние скобки");
             } else {
-                throw new Exception("Использование других символов запрещено");
+                throw new WrongOperandsException("Использование других символов запрещено: " + operand);
             }
         }
         return numbersStack.pop();
@@ -36,12 +39,19 @@ public class CalculatorImpl implements Calculator {
         return inputExpression.replaceAll("\\s", "");
     }
 
-    private String validateInputExpression(String inputExpression) throws Exception {
+    private String validateInputExpression(String inputExpression) throws CalculatorValidationException {
+        if (inputExpression.equals("")) {
+            throw new CalculatorValidationException("Пустое выражение");
+        }
+
         Pattern pattern = Pattern.compile(CalculatorRegEx.RESTRICTED_CASES_REG_EX);
         Matcher matcher = pattern.matcher(inputExpression);
 
         if (matcher.find()) {
-            throw new Exception("Проверьте правильность написания выражения: " + matcher.group());
+            StringBuilder stringBuilder = new StringBuilder(inputExpression);
+            stringBuilder.insert(matcher.start(), " --> ");
+
+            throw new CalculatorValidationException("Ошибка: " + stringBuilder.toString());
         }
         return inputExpression;
     }
@@ -128,7 +138,8 @@ public class CalculatorImpl implements Calculator {
         }
     }
 
-    private String calculateExpression(Double firstDouble, Double secondDouble, String operator) throws Exception {
+    private String doOperationOnDoubles(Double firstDouble, Double secondDouble, String operator)
+            throws DevideByZeroException, WrongOperandsException {
         if (firstDouble == 0) {
             if (operator.equals("-")) {
                 return operator + secondDouble;
@@ -146,6 +157,9 @@ public class CalculatorImpl implements Calculator {
                 result = firstDouble * secondDouble;
                 break;
             case ":":
+                if (secondDouble == 0) {
+                    throw new DevideByZeroException("Деление на ноль невозможно");
+                }
                 result = firstDouble / secondDouble;
                 break;
             case "+":
@@ -155,11 +169,9 @@ public class CalculatorImpl implements Calculator {
                 result = firstDouble - secondDouble;
                 break;
             default:
-                throw new Exception("Используются недопустимые операторы");
+                throw new WrongOperandsException("Используются недопустимые операторы");
         }
 
         return Double.toString(result);
     }
-
-
 }

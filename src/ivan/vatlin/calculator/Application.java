@@ -1,19 +1,19 @@
 package ivan.vatlin.calculator;
 
+import ivan.vatlin.calculator.calculator.Calculator;
+
 public class Application {
     public static void main(String[] args) {
-        String mathExpression = "-7+(8*4):2+000";
-//        String mathExpression = "3+4*2:(1-5)^2^3";
+        String mathExpression = "-7+(8.67*4):2"; // expected result 10.34
+        System.out.println("Выражение: " + mathExpression);
 
-        System.out.println("Входное выражение: " + mathExpression);
-        Calculator calculator = new CalculatorImpl();
-        String result = null;
+        Calculator calculator = new Calculator();
         try {
-            result = calculator.calculate(mathExpression);
+            String result = calculator.calculate(mathExpression);
+            System.out.println("Результат: " + result);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-        System.out.println("Результат: " + result);
     }
 }
