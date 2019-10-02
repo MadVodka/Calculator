@@ -16,8 +16,8 @@ public class Calculator {
 
         PolishNotation polishNotation = new PolishNotation(validatedInputExpression, CalculatorRegEx.OPERANDS_REG_EX);
         List<String> reversePolishNotation = polishNotation.getReversePolishNotation();
-        Deque<String> numbersStack = new ArrayDeque<>();
 
+        Deque<String> numbersStack = new ArrayDeque<>();
         for (String operand : reversePolishNotation) {
             if (Pattern.matches(CalculatorRegEx.NUMBERS_REG_EX, operand)) {
                 numbersStack.push(operand);
