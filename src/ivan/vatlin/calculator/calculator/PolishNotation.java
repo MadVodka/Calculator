@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ivan.vatlin.calculator.calculator.CalculationOperators.*;
+
 public class PolishNotation {
-    private static final String OPEN_BRACE = "(";
-    private static final String CLOSE_BRACE = ")";
     private String inputExpression;
     private String operandsRegEx;
     private List<String> outputOperands;
@@ -50,7 +50,7 @@ public class PolishNotation {
     private void doOperationOnOperator(String operator) {
         String lastOperator = operatorsStack.peek();
 
-        if (lastOperator != null && lastOperator.equals("(")) {
+        if (lastOperator != null && lastOperator.equals(OPEN_BRACE)) {
             operatorsStack.push(operator);
             return;
         }
@@ -67,11 +67,11 @@ public class PolishNotation {
     }
 
     private void doOperationOnBrace(String brace) {
-        if (brace.equals("(")) {
+        if (OPEN_BRACE.equals(brace)) {
             operatorsStack.push(brace);
-        } else if (brace.equals(")")) {
+        } else if (CLOSE_BRACE.equals(brace)) {
             String lastOperator = operatorsStack.poll();
-            while (lastOperator != null && !lastOperator.equals("(")) {
+            while (lastOperator != null && !lastOperator.equals(OPEN_BRACE)) {
                 outputOperands.add(lastOperator);
                 lastOperator = operatorsStack.poll();
             }
@@ -79,31 +79,25 @@ public class PolishNotation {
     }
 
     private boolean isBrace(String operand) {
-        return operand.equals(OPEN_BRACE) || operand.equals(CLOSE_BRACE);
+        return BRACES.contains(operand);
     }
 
     private boolean isOperator(String operand) {
-        switch (operand) {
-            case "*":
-            case ":":
-            case "+":
-            case "-":
-            case "^":
-                return true;
-            default:
-                return false;
-        }
+        return OPERATORS.contains(operand);
     }
 
     private int priority(String operator) {
         switch (operator) {
-            case "^":
+            case POWER:
                 return 3;
-            case "*":
-            case ":":
+            case MULTIPLY:
+            case DIVIDE:
                 return 2;
-            default:
+            case PLUS:
+            case MINUS:
                 return 1;
+            default:
+                return 0;
         }
     }
 }

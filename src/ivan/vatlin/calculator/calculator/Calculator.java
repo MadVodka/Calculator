@@ -1,7 +1,7 @@
 package ivan.vatlin.calculator.calculator;
 
 import ivan.vatlin.calculator.exceptions.CalculatorValidationException;
-import ivan.vatlin.calculator.exceptions.DevideByZeroException;
+import ivan.vatlin.calculator.exceptions.DivideByZeroException;
 import ivan.vatlin.calculator.exceptions.WrongOperandsException;
 
 import java.util.*;
@@ -9,7 +9,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static ivan.vatlin.calculator.calculator.CalculationOperators.*;
+
 public class Calculator {
+
+//    public static void main(String[] args) throws CalculatorValidationException, WrongOperandsException {
+//        Calculator calculator = new Calculator();
+//        System.out.println(calculator.calculate("vasya"));
+//    }
     public String calculate(String inputExpression) throws WrongOperandsException, CalculatorValidationException {
         String preparedInputExpression = prepareInputExpression(inputExpression);
         String validatedInputExpression = validateInputExpression(preparedInputExpression);
@@ -57,18 +64,18 @@ public class Calculator {
         return inputExpression;
     }
 
-    private Double convertStringToDouble(String doubleAsString) {
+    private Double convertStringToDouble(String doubleAsString) throws NumberFormatException {
         return Stream.of(doubleAsString)
-                .filter(Objects::nonNull)
+//                .filter(Objects::nonNull)
                 .mapToDouble(Double::valueOf)
                 .findFirst()
                 .orElse(0);
     }
 
     private String doOperationOnDoubles(Double firstDouble, Double secondDouble, String operator)
-            throws DevideByZeroException, WrongOperandsException {
+            throws DivideByZeroException, WrongOperandsException {
         if (firstDouble == 0) {
-            if (operator.equals("-")) {
+            if (operator.equals(MINUS)) {
                 return operator + secondDouble;
             }
             return Double.toString(secondDouble);
@@ -77,22 +84,22 @@ public class Calculator {
         double result;
 
         switch (operator) {
-            case "^":
+            case POWER:
                 result = Math.pow(firstDouble, secondDouble);
                 break;
-            case "*":
+            case MULTIPLY:
                 result = firstDouble * secondDouble;
                 break;
-            case ":":
+            case DIVIDE:
                 if (secondDouble == 0) {
-                    throw new DevideByZeroException("Деление на ноль невозможно");
+                    throw new DivideByZeroException("Деление на ноль невозможно");
                 }
                 result = firstDouble / secondDouble;
                 break;
-            case "+":
+            case PLUS:
                 result = firstDouble + secondDouble;
                 break;
-            case "-":
+            case MINUS:
                 result = firstDouble - secondDouble;
                 break;
             default:
