@@ -4,7 +4,7 @@ import ivan.vatlin.calculator.calculator.Calculator;
 
 public class Application {
     public static void main(String[] args) {
-        String mathExpression = "-7+(8.67*4):2"; // expected result 10.34
+        String mathExpression = "1-7+(8.67*4):2"; // expected result 11.34
         System.out.println("Выражение: " + mathExpression);
 
         Calculator calculator = new Calculator();

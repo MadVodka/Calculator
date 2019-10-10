@@ -12,11 +12,6 @@ import java.util.stream.Stream;
 import static ivan.vatlin.calculator.calculator.CalculationOperators.*;
 
 public class Calculator {
-
-//    public static void main(String[] args) throws CalculatorValidationException, WrongOperandsException {
-//        Calculator calculator = new Calculator();
-//        System.out.println(calculator.calculate("vasya"));
-//    }
     public String calculate(String inputExpression) throws WrongOperandsException, CalculatorValidationException {
         String preparedInputExpression = prepareInputExpression(inputExpression);
         String validatedInputExpression = validateInputExpression(preparedInputExpression);
@@ -66,7 +61,7 @@ public class Calculator {
 
     private Double convertStringToDouble(String doubleAsString) throws NumberFormatException {
         return Stream.of(doubleAsString)
-//                .filter(Objects::nonNull)
+                .filter(Objects::nonNull)
                 .mapToDouble(Double::valueOf)
                 .findFirst()
                 .orElse(0);
